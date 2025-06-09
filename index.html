@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Emergency Supply Expiry Tracker</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f4f4f4; }
+    h1 { color: #333; }
+    input, button { padding: 10px; margin: 5px 0; width: 100%; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { padding: 10px; border: 1px solid #ccc; text-align: left; }
+    .expired { background-color: #f8d7da; }
+    .warning { background-color: #fff3cd; }
+  </style>
+</head>
+<body>
+
+<h1>Emergency Supply Expiry Tracker</h1>
+
+<label>Item Name:</label>
+<input type="text" id="itemName" placeholder="e.g. First Aid Kit" />
+
+<label>Expiry Date:</label>
+<input type="date" id="expiryDate" />
+
+<button onclick="addItem()">Add Item</button>
+
+<table>
+  <thead>
+    <tr>
+      <th>Item</th>
+      <th>Expiry Date</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody id="itemTableBody"></tbody>
+</table>
+
+<script>
+  const itemTableBody = document.getElementById("itemTableBody");
+
+  function addItem() {
+    const name = document.getElementById("itemName").value;
+    const date = document.getElementById("expiryDate").value;
+    if (!name || !date) {
+      alert("Please enter both item name and expiry date.");
+      return;
+    }
+
+    const expiryDate = new Date(date);
+    const today = new Date();
+    const diffTime = expiryDate - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    let status = "";
+    let rowClass = "";
+
+    if (diffDays < 0) {
+      status = "Expired";
+      rowClass = "expired";
+    } else if (diffDays <= 7) {
+      status = `Expiring in ${diffDays} day(s)`;
+      rowClass = "warning";
+    } else {
+      status = `Valid (${diffDays} days left)`;
+    }
+
+    const row = `<tr class="${rowClass}">
+                  <td>${name}</td>
+                  <td>${expiryDate.toISOString().split('T')[0]}</td>
+                  <td>${status}</td>
+                 </tr>`;
+    itemTableBody.innerHTML += row;
+
+    // Reset form
+    document.getElementById("itemName").value = "";
+    document.getElementById("expiryDate").value = "";
+  }
+</script>
+
+</body>
+</html>
